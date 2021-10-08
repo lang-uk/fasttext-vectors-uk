@@ -19,10 +19,13 @@ class EpochSaver(CallbackAny2Vec):
 
     def on_epoch_end(self, model):
         if (self.epoch + 1) % self.settings.save_nth_epoch == 0:
+            fname = str(self.settings.path_save_model
+                / f"{os.path.basename(self.settings.corpus_path)}.d{self.settings.vector_size}.subword{self.settings.ngram}.{self.settings.algo}.epoch{self.epoch + 1}.bin")
+
+            logger.info(f"Saving checkpoint at epoch #{self.epoch} under name '{fname}'")
             gensim.models.fasttext.save_facebook_model(
                 model,
-                str(self.settings.path_save_model
-                / f"{os.path.basename(self.settings.corpus_path)}.d{self.settings.vectors_size}.subword{self.settings.min_ngram}-{self.settings.max_ngram}.{self.settings.algo}.epoch{self.epoch}.bin"),
+                fname,
             )
 
         self.epoch += 1
