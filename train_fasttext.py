@@ -2,6 +2,7 @@ import sys
 import pathlib
 import argparse
 import logging
+import multiprocessing
 
 from gensim.models.fasttext import FastText
 from callbacks import EpochLogger, EpochSaver
@@ -16,7 +17,7 @@ def train_model(settings):
     epoch_logger = EpochLogger()
     epoch_saver = EpochSaver(settings)
     sg = 1 if settings.algo == "skipgram" else 0
-    model = FastText(vector_size=settings.vector_size)
+    model = FastText(vector_size=settings.vector_size, workers=settings.threads)
 
     # build the vocabulary
     # TODO: try to move it outside of the grid loop
@@ -25,7 +26,7 @@ def train_model(settings):
     total_words = model.corpus_total_words
 
     logger.info(
-        f"Started training (algo:{settings.algo}, dims:{settings.vector_size}, ngram:{settings.ngram}, corpus:{settings.corpus_path}, words:{total_words})..."
+        f"Started training (algo:{settings.algo}, dims:{settings.vector_size}, ngram:{settings.ngram}, corpus:{settings.corpus_path}, words:{total_words}) on {settings.threads} threads..."
     )
     # train the model
 
@@ -33,6 +34,7 @@ def train_model(settings):
         corpus_file=str(settings.corpus_path),
         sg=sg,
         total_words=total_words,
+        total_examples=model.corpus_count,
         epochs=settings.n_epoch,
         min_n=min_ngram,
         max_n=max_ngram,
@@ -59,7 +61,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--algo", type=str, help="Skipgrams or CBOW", choices=("skipgram", "cbow"), default=["skipgram"], nargs="+"
     )
-    parser.add_argument("--verbosity", type=int, default=1, choices=(0, 1, 2, 3))
+    parser.add_argument(
+        "--verbosity",
+        type=int,
+        default=1,
+        choices=(0, 1, 2, 3),
+        help="Level of verbosity (3 means debug from everything, including gensim)",
+    )
+    parser.add_argument("--threads", type=int, default=multiprocessing.cpu_count())
     args = parser.parse_args()
 
     logging.basicConfig(format="%(name)s:%(levelname)s %(asctime)s %(message)s")
