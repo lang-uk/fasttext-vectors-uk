@@ -8,7 +8,7 @@ We use [gensim](https://radimrehurek.com/gensim/models/fasttext.html) library fo
 git clone https://github.com/romanyshyn-natalia/fasttext-vectors-uk.git
 cd fasttext-vectors-uk
 pip install -r requirements.txt
-python train_fasttext.py <corpus_file> <vector_size> <cbow/skipgram> <number_of_epoch> <output_file_path> <nth_epoch_to_save> <min_ngram> <max_ngram>
+python train_fasttext.py <corpus_path> <path_save_model>
 ```
 
 ## Input parameters
