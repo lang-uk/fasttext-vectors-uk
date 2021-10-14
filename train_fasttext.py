@@ -48,7 +48,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("corpus_path", type=pathlib.Path, help="Path to the corpus text file")
     parser.add_argument("--vector_size", type=int, help="Dimensions of the vectors", default=[300], nargs="+")
-    parser.add_argument("--n_epoch", type=int, help="Number of epochs", default=15)
+    parser.add_argument("--n_epoch", type=int, help="Number of epochs", default=10)
     parser.add_argument("--save_nth_epoch", type=int, help="Save every nth epoch", default=5)
     parser.add_argument(
         "--ngram",
