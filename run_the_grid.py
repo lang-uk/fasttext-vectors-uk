@@ -10,6 +10,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 import shutil
 import multiprocessing
+import socket
 
 import executor
 import requests
@@ -77,6 +78,7 @@ def pick_the_task(worksheet):
 
             worksheet.update_cell(row_no + 2, 3, "Processing")
             worksheet.update_cell(row_no + 2, 4, str(datetime.now()))
+            worksheet.update_cell(row_no + 2, 5, socket.gethostname())
 
             return {
                 "task": t,
