@@ -63,7 +63,7 @@ def get_worksheet(api_key_path, spreadshet_id, worksheet_name="Params combined")
         return
 
 
-def pick_the_task(worksheet):
+def pick_the_task(worksheet, hostname):
     tasks = worksheet.get_all_records()
 
     for row_no, t in enumerate(tasks):
@@ -78,7 +78,7 @@ def pick_the_task(worksheet):
 
             worksheet.update_cell(row_no + 2, 3, "Processing")
             worksheet.update_cell(row_no + 2, 4, str(datetime.now()))
-            worksheet.update_cell(row_no + 2, 5, socket.gethostname())
+            worksheet.update_cell(row_no + 2, 5, hostname)
 
             return {
                 "task": t,
@@ -143,7 +143,7 @@ def train(args):
         return
 
     while True:
-        task = pick_the_task(worksheet)
+        task = pick_the_task(worksheet, config.get("hostname", socket.gethostname()))
         if task is None:
             logger.warning(f"Woohoo, no more tasks left in the queue")
             return
@@ -275,6 +275,7 @@ def setup(args):
                     "threads": args.threads,
                     "vectors": str(args.vectors_location),
                     "logfile": str(args.logfile),
+                    "hostname": args.hostname,
                 },
                 fp_out,
                 sort_keys=True,
@@ -388,6 +389,11 @@ if __name__ == "__main__":
     setup_parser.add_argument(
         "--logfile", type=pathlib.Path, help="JSONLines file to write training details",
         default=pathlib.Path("log.jsonl")
+    )
+
+    setup_parser.add_argument(
+        "--hostname", type=str, help="Identifier of the worker, defaulted to the hostname",
+        default=socket.gethostname()
     )
 
     setup_parser.set_defaults(func=setup)
