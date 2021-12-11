@@ -167,10 +167,13 @@ def train(args):
             corpus_path,
             "-output",
             vectors_fname,
+            "-dim",
+            "300"
         )
         
         vectors_plaintext = vectors_fname.parent / (vectors_fname.name + '.vec')
-        vectors_plaintext.unlink(missing_ok=True)
+        if vectors_plaintext.exists():
+            vectors_plaintext.unlink()
         vectors_bin = vectors_fname.parent / (vectors_fname.name + '.bin')
 
         with open(config["logfile"], "a") as fp_out:
