@@ -169,8 +169,8 @@ def train(args):
             vectors_fname,
             "-dim",
             "300",
-            "-threads",
-            config["threads"],
+            "-thread",
+            str(config["threads"]),
         )
         
         vectors_plaintext = vectors_fname.parent / (vectors_fname.name + '.vec')
