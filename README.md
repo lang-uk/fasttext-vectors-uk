@@ -71,7 +71,7 @@ It'll run handful of preflight checks, connect to the spreadsheet, pick the next
 * Script is training vectors of dimensionality 300.
 * Script deletes textual version of the vectors once the training is done. For our purposes we only need binary vectors.
 * In the training mode script will be start training the next task as soon as the current one is finished (until there are no more tasks or the Universe came to it's end, or you ran out of space (see below)).
-* You **should** watch for the free space on your servers. With vectors of dim 300 and enough textual data (our corpus has almost 20GB of texts) each generated vector file weights 8.3GB each, so you might ran out of space quickly. It also needs some temporary space to store textual version of the vectors.
+* You **should** watch for the free space on your servers. With vectors of dim 300 and enough textual data (our corpus has almost 20GB of texts) generated vector file weights 8.3GB each, so you might ran out of space quickly. It also needs some temporary space to store textual version of the vectors.
 * Script is maintaining the local log file `log.jsonl` for your reference.
 * It might take weeks, months and even years to train a huge grid. Throw as many servers as you can. Oracle Free Tier Ampere servers is a good working horse (12 ARM cores and 72GB for free!) and probably the best performance that we had on different arcitectures (old Intel Xeons, Intel i7, AMD etc). Unfortunatelly, it's impossible to train fasttext on GPU.
 * Also, run the training in `tmux` or `screen`
