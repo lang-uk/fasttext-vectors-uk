@@ -1,1 +1,8 @@
 __pycache__/
+config.json
+lib/
+corpus/
+vectors/
+.DS_Store
+api_keys/
+log.jsonl
