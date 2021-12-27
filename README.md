@@ -1,6 +1,6 @@
 # Learning Ukrainian word vectors with fastText models
 
-`run_the_grid.py` is the script that allows a grid training of fasttext on a given corpus on different servers (nodes). It uses google spreadsheet (through gspread) to perform task distribution and to write down the results. This repo also contains the previous version of the script (`gensim_fasttet`), that was based on gensim. However, on our data, vectors trained on gensim shown weaker performance on [our intrinsic tests](https://github.com/lang-uk/vecs), so we left it in the repo for the reference.
+`run_the_grid.py` is the script that allows a grid training of fasttext on a given corpus on different servers (nodes). It uses google spreadsheet (through gspread) to perform task distribution and to write down the results. This repo also contains the previous version of the script (`gensim_fasttext`), that was based on gensim. However, on our data, vectors trained on gensim shown weaker performance on [our intrinsic tests](https://github.com/lang-uk/vecs), so we left it in the repo for the reference.
 
 Our rationale was to train as much as 96 different combinations of hyperparams on the same corpus using farm of 7 servers (estimated running time is 25-30 days). Script do not upload the results of training, we've used https://github.com/prasmussen/gdrive to upload files manually from the workers. 
 
