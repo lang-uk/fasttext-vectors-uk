@@ -18,7 +18,9 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Script has two commands, `setup` and `train`. First allows you to create folders, download and unpack vectors, checkout and compile Facebook's fasttext binaries and store the config. You'll need to create your own spreadsheet (you can copy it from [here](https://docs.google.com/spreadsheets/d/150DjEZKCuJEcsCJWahWmhPkfHzn9pA-N3UIYYx7XM04/edit?usp=sharing)) to manage tasks distribution. Spreadsheet contains two worksheets, first has the hyperparams you'd like to try in the grid and stats, second is generated from the hyperparams (first two columns) and is being updated by worker nodes (columns 3-5). The last column is updated manually after the upload of the vectors. You'll also need to create a json file for gspread with access credentials and store in the `api_keys` folder. You would probably like to replace the hostname with `--hostname` and adjust number of threads (`--threads`, defaulted to the number of CPU cores -2). You should also specify the id of your google spreadsheet with `--spreadshet_id` (yes, we are aware of a typo there) and specify your api key file location with `--api_key_location`.
+Script has two commands, `setup` and `train`. First allows you to create folders, download and unpack vectors, checkout and compile Facebook's fasttext binaries and store the config. You'll need to create your own spreadsheet (you can copy it from [here](https://docs.google.com/spreadsheets/d/150DjEZKCuJEcsCJWahWmhPkfHzn9pA-N3UIYYx7XM04/edit?usp=sharing)) to manage tasks distribution. Spreadsheet contains two worksheets, first has the hyperparams you'd like to try in the grid and stats, second is generated from the hyperparams (first two columns) and is being updated by worker nodes (columns 3-5). The last column is updated manually after the upload of the vectors. You'll also need to create a json file for gspread with access credentials and store in the `api_keys` folder. You would probably like to replace the hostname with `--hostname` and adjust number of threads (`--threads`, defaulted to the number of CPU cores -2).
+
+You should also specify the id of your google spreadsheet with `--spreadshet_id` (yes, we are aware of a typo there) and specify your api key file location with `--api_key_location`. Please refer to the original documentation of the gspread for a [perfect step-by-step guide](https://docs.gspread.org/en/latest/oauth2.html#enable-api-access-for-a-project).
 
 ```bash
 python ./run_the_grid.py -v setup
@@ -55,6 +57,23 @@ optional arguments:
   --logfile LOGFILE     JSONLines file to write training details
   --hostname HOSTNAME   Identifier of the worker, defaulted to the hostname
 ```
+You might also modify generated `config.json` manually or re-run the `setup` command with the `--overwrite_config` key. 
+
+Once you are done with the setup on your first node, you might run the training immediatelly on that machine.
+To do so run 
+```bash
+python ./run_the_grid.py -v train
+```
+
+It'll run handful of preflight checks, connect to the spreadsheet, pick the next available task, set it to the `Processing` state and start training.
+
+## Caveats
+* Script is training vectors of dimensionality 300.
+* Script deletes textual version of the vectors once the training is done. For our purposes we only need binary vectors.
+* In the training mode script will be start training the next task as soon as the current one is finished (until there are no more tasks or the Universe came to it's end, or you ran out of space (see below)).
+* You **should** watch for the free space on your servers. With vectors of dim 300 and enough textual data (our corpus has almost 20GB of texts) each generated vector file weights 8.3GB each, so you might ran out of space quickly. It also needs some temporary space to store textual version of the vectors.
+* Script is maintaining the local log file `log.jsonl` for your reference.
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
