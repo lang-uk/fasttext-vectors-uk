@@ -42,24 +42,24 @@ def open_compressed(filename):
     return None
 
 
-def get_worksheet(api_key_path, spreadshet_id, worksheet_name="Params combined"):
+def get_worksheet(api_key_path, spreadsheet_id, worksheet_name="Params combined"):
     try:
         gc = gspread.service_account(filename=api_key_path)
-        sh = gc.open_by_key(spreadshet_id)
+        sh = gc.open_by_key(spreadsheet_id)
         logger.info(f"Successfully opened spreadshet {sh.title}")
     except gspread.exceptions.APIError:
         logger.error(
-            f"Cannot connect to google spreadsheet, check the validity of your service account api key {api_key_path} or spreadshet id {spreadshet_id}"
+            f"Cannot connect to google spreadsheet, check the validity of your service account api key {api_key_path} or spreadshet id {spreadsheet_id}"
         )
         return
     except gspread.exceptions.SpreadsheetNotFound:
-        logger.error(f"Cannot find google spreadsheet, check your spreadshet id {spreadshet_id}")
+        logger.error(f"Cannot find google spreadsheet, check your spreadshet id {spreadsheet_id}")
         return
 
     try:
         return sh.worksheet(worksheet_name)
     except gspread.exceptions.WorksheetNotFound:
-        logger.error(f"Cannot open worksheet {worksheet_name} in {spreadsheet.title}, please fix the spreadsheet")
+        logger.error(f"Cannot open worksheet {worksheet_name} in {sh.title}, please fix the spreadsheet")
         return
 
 
@@ -138,7 +138,7 @@ def train(args):
         )
         return
 
-    worksheet = get_worksheet(api_key_path, config.get("spreadshet_id"))
+    worksheet = get_worksheet(api_key_path, config.get("spreadsheet_id"), config.get("worksheet_name"))
     if worksheet is None:
         return
 
@@ -276,7 +276,8 @@ def setup(args):
                     "corpus": str(decompressed_corpus_path),
                     "fasttext": str(fasttext_path),
                     "api_key": str(args.api_key_location),
-                    "spreadshet_id": args.spreadshet_id,
+                    "spreadsheet_id": args.spreadsheet_id,
+                    "worksheet_name": args.worksheet_name,
                     "threads": args.threads,
                     "vectors": str(args.vectors_location),
                     "logfile": str(args.logfile),
@@ -381,10 +382,17 @@ if __name__ == "__main__":
     )
 
     setup_parser.add_argument(
-        "--spreadshet_id",
+        "--spreadsheet_id",
         type=str,
         help="Google Spreadsheet id (the one from the url) with the spreadsheet of tasks and results",
         default="150DjEZKCuJEcsCJWahWmhPkfHzn9pA-N3UIYYx7XM04",
+    )
+
+    setup_parser.add_argument(
+        "--worksheet_name",
+        type=str,
+        help="Google Spreadsheet's Worksheet name with results",
+        default="Params combined",
     )
 
     setup_parser.add_argument(

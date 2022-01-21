@@ -1,4 +1,4 @@
-gensim
+gensim @ git+https://github.com/witiko/gensim.git@pine#egg=gensim
 google-api-python-client==2.29.0
 google-auth-httplib2==0.1.0
 google-auth-oauthlib==0.4.6

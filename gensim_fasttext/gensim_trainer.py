@@ -17,7 +17,21 @@ def train_model(settings):
     epoch_logger = EpochLogger()
     epoch_saver = EpochSaver(settings)
     sg = 1 if settings.algo == "skipgram" else 0
-    model = FastText(vector_size=settings.vector_size, workers=settings.threads)
+    weighted = 1 if settings.algo == "cbow_weighted" else 0
+    model = FastText(
+        vector_size=settings.vector_size,
+        workers=settings.threads,
+        position_dependent_weights=weighted,
+
+        # Probably those hyperparamets contributed to initial bad performance of the GS
+        window=15,
+        negative=15,
+
+        # Just to aligh all the parameters, but that doesn't make much sense, since:
+        # In Facebook's FastText, "max length of word ngram" - but gensim only supports the
+        # default of 1 (regular unigram word handling).
+        # word_ngrams=3,
+    )
 
     # build the vocabulary
     # TODO: try to move it outside of the grid loop
@@ -59,7 +73,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("path_save_model", type=pathlib.Path, help="Path to save checkpoints")
     parser.add_argument(
-        "--algo", type=str, help="Skipgrams or CBOW", choices=("skipgram", "cbow"), default=["skipgram"], nargs="+"
+        "--algo",
+        type=str,
+        help="Skipgrams or CBOW",
+        choices=("skipgram", "cbow", "cbow_weighted"),
+        default=["skipgram"],
+        nargs="+",
     )
     parser.add_argument(
         "--verbosity",
